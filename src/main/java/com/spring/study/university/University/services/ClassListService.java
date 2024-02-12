@@ -2,17 +2,16 @@ package com.spring.study.university.University.services;
 
 import com.spring.study.university.University.domain.Assignature;
 import com.spring.study.university.University.domain.ClassList;
-import com.spring.study.university.University.domain.Grade;
 import com.spring.study.university.University.domain.Schedule;
 import com.spring.study.university.University.domain.Student;
-import com.spring.study.university.University.repositories.AssignatureRepository;
 import com.spring.study.university.University.repositories.ClassListRepository;
-import com.spring.study.university.University.repositories.ScheduleRepository;
-import com.spring.study.university.University.repositories.StudentRepository;
+import com.spring.study.university.University.services.validations.AssignatureValidations;
+import com.spring.study.university.University.services.validations.ClassListValidations;
+import com.spring.study.university.University.services.validations.ScheduleValidations;
+import com.spring.study.university.University.services.validations.StudentValidations;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,18 +21,19 @@ import java.util.UUID;
 @Service
 public class ClassListService {
   private final ClassListRepository classListRepository;
-  private final StudentRepository studentRepository;
-  private final AssignatureRepository assignatureRepository;
-  private final ScheduleRepository scheduleRepository;
+  private final AssignatureValidations assignatureValidations;
+  private final ScheduleValidations scheduleValidations;
+
+  private final ClassListValidations classListValidations;
+  private final StudentValidations studentValidations;
 
   public ClassList createClassList(String assignatureId, List<String> schedules, Integer maxNumberOfStudents) {
-    Assignature assignature = assignatureRepository
-        .findById(UUID.fromString(assignatureId))
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    Assignature assignature = assignatureValidations
+        .validateIfAssignatureExists(UUID.fromString(assignatureId));
 
     List<UUID> schedulesIds = schedules.stream().map(id -> UUID.fromString(id)).toList();
 
-    List<Schedule> schedulesList = (List<Schedule>) scheduleRepository.findAllById(schedulesIds);
+    List<Schedule> schedulesList = scheduleValidations.validateSchedulesExists(schedulesIds);
 
     ClassList classList = new ClassList();
     classList.setAssignature(assignature);
@@ -44,21 +44,13 @@ public class ClassListService {
   }
 
   public ClassList addStudent(UUID uuid, Long studentId) {
-    ClassList classList = classListRepository
-        .findById(uuid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
+    ClassList classList = classListValidations.validateIfClassListExists(uuid);
 
-    Student student = studentRepository
-        .findByStudentNumber(studentId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    Student student = studentValidations.validateIfStudentExists(studentId);
 
-    if (classList.getStudents().size() == classList.getMaxNumberOfStudents()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No more students accepted");
-    }
-
-    if (classList.getStudents().contains(student)) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student already in class");
-    }
-
-    validateAssignaturePrerequisites(classList.getAssignature(), student);
+    classListValidations.validateIfClassIsFull(classList);
+    classListValidations.validateIfStudentInClass(classList, student);
+    assignatureValidations.validateAssignaturePrerequisiteValid(classList.getAssignature(), student);
 
     classList.getStudents().add(student);
 
@@ -66,16 +58,10 @@ public class ClassListService {
   }
 
   public ClassList removeStudent(UUID uuid, Long studentId) {
-    ClassList classList = classListRepository
-        .findById(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    ClassList classList = classListValidations.validateIfClassListExists(uuid);
+    Student student = studentValidations.validateIfStudentExists(studentId);
 
-    Student student = studentRepository
-        .findByStudentNumber(studentId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-    if (!classList.getStudents().contains(student)) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student is not in class");
-    }
+    classListValidations.validateIfStudentInClass(classList, student);
 
     classList.getStudents().remove(student);
 
@@ -83,39 +69,15 @@ public class ClassListService {
   }
 
   public List<Student> getStudentsOfClass(UUID uuid) {
-    ClassList classList = classListRepository
-        .findById(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    ClassList classList = classListValidations.validateIfClassListExists(uuid);
 
     List<Student> students = new ArrayList<>();
-
-    classList.getStudents().forEach(student -> students.add(student));
+    classList.getStudents().forEach(students::add);
 
     return students;
   }
 
-  private void validateAssignaturePrerequisites(Assignature assignature, Student student) {
-    if (!assignature.getPrerequisites().isEmpty()) {
-
-      List<Assignature> prerequsites = new ArrayList<>(assignature.getPrerequisites()
-          .stream().map(prerequisite -> prerequisite.getAssignature()).toList());
-
-      List<Grade> studentAssignatures = student
-          .getGrades()
-          .stream()
-          .filter(grade -> prerequsites.contains(grade.getAssignature())).toList();
-
-      if (studentAssignatures.isEmpty()) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite required");
-      }
-
-      if (studentAssignatures.stream().noneMatch(grade -> grade.getGrade() >= Float.valueOf(3))) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite needs at least 3.0");
-      }
-    }
-  }
-
   public ClassList getClassList(UUID uuid) {
-    return classListRepository.findById(uuid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    return classListValidations.validateIfClassListExists(uuid);
   }
 }
