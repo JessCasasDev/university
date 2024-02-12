@@ -1,7 +1,9 @@
 package com.spring.study.university.University.services.validations;
 
 import com.spring.study.university.University.domain.Assignature;
+import com.spring.study.university.University.domain.Grade;
 import com.spring.study.university.University.domain.Professor;
+import com.spring.study.university.University.domain.Student;
 import com.spring.study.university.University.repositories.AssignatureRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -10,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -77,5 +80,26 @@ public class AssignatureValidations {
         .anyMatch(s -> {
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignature cannot be part of prerequisites");
         });
+  }
+
+  public void validateAssignaturePrerequisiteValid(Assignature assignature, Student student) {
+    if (!assignature.getPrerequisites().isEmpty()) {
+
+      List<Assignature> prerequsites = new ArrayList<>(assignature.getPrerequisites()
+          .stream().map(prerequisite -> prerequisite.getAssignature()).toList());
+
+      List<Grade> studentAssignatures = student
+          .getGrades()
+          .stream()
+          .filter(grade -> prerequsites.contains(grade.getAssignature())).toList();
+
+      if (studentAssignatures.isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite required");
+      }
+
+      if (studentAssignatures.stream().noneMatch(grade -> grade.getGrade() >= Float.valueOf(3))) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite needs at least 3.0");
+      }
+    }
   }
 }
