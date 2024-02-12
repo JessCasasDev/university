@@ -3,6 +3,7 @@ package com.spring.study.university.University.services.validations;
 import com.spring.study.university.University.domain.ClassList;
 import com.spring.study.university.University.domain.Student;
 import com.spring.study.university.University.repositories.ClassListRepository;
+import com.spring.study.university.University.utils.ConstraintValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Service
 public class ClassListValidations {
   private final ClassListRepository classListRepository;
+  private final ConstraintValidations constraintValidations;
 
   public ClassList validateIfClassListExists(UUID uuid) {
     return classListRepository.findById(uuid).orElseThrow(() ->
@@ -32,4 +34,7 @@ public class ClassListValidations {
     }
   }
 
+  public void validateClassListFields(ClassList classList) {
+    constraintValidations.validateFields(classList);
+  }
 }

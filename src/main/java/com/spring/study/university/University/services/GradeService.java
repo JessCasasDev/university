@@ -34,6 +34,8 @@ public class GradeService {
     gradeObj.setAssignature(assignature);
     gradeObj.setStudent(student);
 
+    gradeValidations.validateGradeFields(gradeObj);
+
     return gradeRepository.save(gradeObj);
   }
 

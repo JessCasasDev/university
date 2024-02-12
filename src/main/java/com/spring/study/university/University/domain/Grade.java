@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -30,9 +31,11 @@ public class Grade implements Serializable {
 
   @ManyToOne
   @JoinColumn(name = "student")
+  @NotNull
   private Student student;
 
   @ManyToOne
   @JoinColumn(name = "assignature")
+  @NotNull
   private Assignature assignature;
 }
