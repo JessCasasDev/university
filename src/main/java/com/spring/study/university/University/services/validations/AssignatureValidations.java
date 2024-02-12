@@ -5,8 +5,7 @@ import com.spring.study.university.University.domain.Grade;
 import com.spring.study.university.University.domain.Professor;
 import com.spring.study.university.University.domain.Student;
 import com.spring.study.university.University.repositories.AssignatureRepository;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
+import com.spring.study.university.University.utils.ConstraintValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -23,7 +21,7 @@ import java.util.UUID;
 public class AssignatureValidations {
 
   private final AssignatureRepository assignatureRepository;
-  private Validator validator;
+  private final ConstraintValidations constraintValidations;
 
   public Assignature validateIfAssignatureExists(UUID uuid) {
     return assignatureRepository
@@ -39,15 +37,7 @@ public class AssignatureValidations {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     });
 
-    Set<ConstraintViolation<Assignature>> violations = validator.validate(assignature);
-
-    if (!violations.isEmpty()) {
-      StringBuilder sb = new StringBuilder();
-      for (ConstraintViolation<Assignature> constraintViolation : violations) {
-        sb.append(constraintViolation.getMessage());
-      }
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error occurred: " + sb.toString());
-    }
+    constraintValidations.validateFields(assignature);
   }
 
   public void validateAssignatureTakenByProfessor(Assignature assignature, Professor professor) {

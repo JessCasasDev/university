@@ -40,6 +40,8 @@ public class ClassListService {
     classList.getSchedules().addAll(schedulesList);
     classList.setMaxNumberOfStudents(maxNumberOfStudents);
 
+    classListValidations.validateClassListFields(classList);
+
     return classListRepository.save(classList);
   }
 
