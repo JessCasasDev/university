@@ -3,13 +3,12 @@ package com.spring.study.university.University.services;
 import com.spring.study.university.University.domain.Assignature;
 import com.spring.study.university.University.domain.Grade;
 import com.spring.study.university.University.domain.Student;
-import com.spring.study.university.University.repositories.AssignatureRepository;
 import com.spring.study.university.University.repositories.GradeRepository;
-import com.spring.study.university.University.repositories.StudentRepository;
+import com.spring.study.university.University.services.validations.AssignatureValidations;
+import com.spring.study.university.University.services.validations.GradeValidations;
+import com.spring.study.university.University.services.validations.StudentValidations;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -17,24 +16,18 @@ import java.util.UUID;
 @Service
 public class GradeService {
   private final GradeRepository gradeRepository;
-  private final StudentRepository studentRepository;
-  private final AssignatureRepository assignatureRepository;
+  private final GradeValidations gradeValidations;
+  private final StudentValidations studentValidations;
+  private final AssignatureValidations assignatureValidations;
 
   public Grade createGrade(Long studentId, String assignatureId, Float grade) {
-    if (grade > 5 || grade < 0) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Grade must be between 0 and 5");
-    }
-    Student student = studentRepository
-        .findByStudentNumber(studentId)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+    gradeValidations.validateGradeValue(grade);
 
-    Assignature assignature = assignatureRepository
-        .findById(UUID.fromString(assignatureId))
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assignature not found"));
+    Student student = studentValidations.validateIfStudentExists(studentId);
+    Assignature assignature = assignatureValidations
+        .validateIfAssignatureExists(UUID.fromString(assignatureId));
 
-    if (gradeRepository.findByStudentAndAssignature(student, assignature).isPresent()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignature already graded to Student");
-    }
+    gradeValidations.validateIfGradeExistsForStudent(student, assignature);
 
     Grade gradeObj = new Grade();
     gradeObj.setGrade(grade);
@@ -45,11 +38,8 @@ public class GradeService {
   }
 
   public Grade updateGrade(UUID uuid, Float grade) {
-    Grade gradeObj = gradeRepository.findById(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
-
+    Grade gradeObj = gradeValidations.validateIfGradeExists(uuid);
     gradeObj.setGrade(grade);
-
     return gradeRepository.save(gradeObj);
   }
 }
