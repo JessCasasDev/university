@@ -23,7 +23,6 @@ public class ClassListService {
   private final ClassListRepository classListRepository;
   private final AssignatureValidations assignatureValidations;
   private final ScheduleValidations scheduleValidations;
-
   private final ClassListValidations classListValidations;
   private final StudentValidations studentValidations;
 
@@ -31,7 +30,7 @@ public class ClassListService {
     Assignature assignature = assignatureValidations
         .validateIfAssignatureExists(UUID.fromString(assignatureId));
 
-    List<UUID> schedulesIds = schedules.stream().map(id -> UUID.fromString(id)).toList();
+    List<UUID> schedulesIds = schedules.stream().map(UUID::fromString).toList();
 
     List<Schedule> schedulesList = scheduleValidations.validateSchedulesExists(schedulesIds);
 
@@ -73,10 +72,8 @@ public class ClassListService {
   public List<Student> getStudentsOfClass(UUID uuid) {
     ClassList classList = classListValidations.validateIfClassListExists(uuid);
 
-    List<Student> students = new ArrayList<>();
-    classList.getStudents().forEach(students::add);
+    return new ArrayList<>(classList.getStudents());
 
-    return students;
   }
 
   public ClassList getClassList(UUID uuid) {

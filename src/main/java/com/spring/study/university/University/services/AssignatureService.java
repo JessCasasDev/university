@@ -74,7 +74,7 @@ public class AssignatureService {
 
   public Assignature addPrerequisite(UUID uuid, ArrayList<String> prerequisites) {
     Assignature assignature = assignatureValidations.validateIfAssignatureExists(uuid);
-    List<UUID> prerequisitesUUID = prerequisites.stream().map((id) -> UUID.fromString(id)).toList();
+    List<UUID> prerequisitesUUID = prerequisites.stream().map(UUID::fromString).toList();
     List<Assignature> assignatures = (List) assignatureRepository.findAllById(prerequisitesUUID);
 
     assignatureValidations.validatePrerequisite(assignature, prerequisitesUUID);

@@ -62,7 +62,7 @@ public class ProfessorService {
 
   public List<Professor> getProfessors() {
     ArrayList<Professor> professors = new ArrayList<>();
-    professorRepository.findAll().forEach(professor -> professors.add(professor));
+    professorRepository.findAll().forEach(professors::add);
     return professors;
   }
 }

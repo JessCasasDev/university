@@ -2,6 +2,7 @@ package com.spring.study.university.University.services.validations;
 
 import com.spring.study.university.University.domain.Assignature;
 import com.spring.study.university.University.domain.Grade;
+import com.spring.study.university.University.domain.Prerequisite;
 import com.spring.study.university.University.domain.Professor;
 import com.spring.study.university.University.domain.Student;
 import com.spring.study.university.University.repositories.AssignatureRepository;
@@ -60,14 +61,16 @@ public class AssignatureValidations {
         .getPrerequisites().stream()
         .map(prerequisite -> prerequisite.getPrerequisite().getUuid())
         .filter(prerequisites::contains)
-        .anyMatch(s -> {
+        .findAny()
+        .ifPresent(s -> {
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite already exists");
         });
 
     prerequisites
         .stream()
         .filter(assignature.getUuid()::equals)
-        .anyMatch(s -> {
+        .findAny()
+        .ifPresent(s -> {
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignature cannot be part of prerequisites");
         });
   }
@@ -76,7 +79,7 @@ public class AssignatureValidations {
     if (!assignature.getPrerequisites().isEmpty()) {
 
       List<Assignature> prerequisites = new ArrayList<>(assignature.getPrerequisites()
-          .stream().map(prerequisite -> prerequisite.getAssignature()).toList());
+          .stream().map(Prerequisite::getAssignature).toList());
 
       List<Grade> studentAssignatures = student
           .getGrades()
@@ -87,7 +90,7 @@ public class AssignatureValidations {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite required");
       }
 
-      if (studentAssignatures.stream().noneMatch(grade -> grade.getGrade() >= Float.valueOf(3))) {
+      if (studentAssignatures.stream().noneMatch(grade -> grade.getGrade() >= 3F)) {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite needs at least 3.0");
       }
     }
