@@ -4,7 +4,9 @@ import com.spring.study.university.University.domain.Grade;
 import com.spring.study.university.University.domain.Person;
 import com.spring.study.university.University.domain.Student;
 import com.spring.study.university.University.repositories.GradeRepository;
+import com.spring.study.university.University.repositories.PersonRepository;
 import com.spring.study.university.University.repositories.StudentRepository;
+import com.spring.study.university.University.services.validations.PersonValidations;
 import com.spring.study.university.University.services.validations.StudentValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class StudentService {
   private final StudentRepository studentRepository;
   private final GradeRepository gradeRepository;
   private final StudentValidations studentValidations;
+  private final PersonValidations personValidations;
 
   public Student getStudentByStudentNumber(Long studentNumber) {
     return studentValidations.validateIfStudentExists(studentNumber);
@@ -32,10 +35,21 @@ public class StudentService {
     person.setEmail(student.getEmail());
     person.setLastName(student.getLastName());
     person.setDocumentNumber(student.getDocumentNumber());
+    person.setPhoneNumber(student.getPhoneNumber());
+    person.setRole(student.getRole());
+    personValidations.validatePersonNoExists(person);
+    personValidations.validatePersonFields(person);
 
     Student studentToSave = new Student();
+    studentToSave.setPhoneNumber(student.getPhoneNumber());
+    studentToSave.setName(student.getName());
+    studentToSave.setLastName(student.getLastName());
+    studentToSave.setEmail(student.getEmail());
+    studentToSave.setRole(student.getRole());
+    studentToSave.setDocumentNumber(student.getDocumentNumber());
     studentToSave.setStudentNumber(student.getStudentNumber());
-    student.setPerson(person);
+
+    studentValidations.validateStudentFields(studentToSave);
 
     return studentRepository.save(studentToSave);
   }
@@ -64,10 +78,6 @@ public class StudentService {
   public Set<Grade> getStudentGrades(Long studentNumber) {
     Student student = studentValidations.validateIfStudentExists(studentNumber);
 
-    Set<Grade> grades = new HashSet<>();
-
-    gradeRepository.findAllByStudent(student).forEach(grade -> grades.add(grade));
-
-    return grades;
+    return new HashSet<>(gradeRepository.findAllByStudent(student));
   }
 }

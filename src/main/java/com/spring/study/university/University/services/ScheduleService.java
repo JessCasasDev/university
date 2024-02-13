@@ -46,7 +46,7 @@ public class ScheduleService {
 
   public List<Schedule> getSchedules() {
     List<Schedule> schedules = new ArrayList<>();
-    scheduleRepository.findAll().forEach(schedule -> schedules.add(schedule));
+    scheduleRepository.findAll().forEach(schedules::add);
     return schedules;
   }
 }

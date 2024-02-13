@@ -3,6 +3,7 @@ package com.spring.study.university.University.services.validations;
 import com.spring.study.university.University.domain.Student;
 import com.spring.study.university.University.enums.RoleEnum;
 import com.spring.study.university.University.repositories.StudentRepository;
+import com.spring.study.university.University.utils.ConstraintValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import org.springframework.web.server.ResponseStatusException;
 @AllArgsConstructor
 public class StudentValidations {
   private final StudentRepository studentRepository;
+  private final ConstraintValidations constraintValidations;
+
 
   public Student validateIfStudentExists(Long id) {
     return studentRepository.findByStudentNumber(id).
@@ -27,5 +30,9 @@ public class StudentValidations {
     if (!student.getRole().getRole().name().equals(RoleEnum.Student.name())) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
+  }
+
+  public void validateStudentFields(Student studentToSave) {
+    constraintValidations.validateFields(studentToSave);
   }
 }
