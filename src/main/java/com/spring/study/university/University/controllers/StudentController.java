@@ -34,10 +34,8 @@ public class StudentController {
 
   @PostMapping("")
   @ResponseStatus(HttpStatus.CREATED)
-  public Student createStudent(@RequestBody JsonNode body) {
-    Long studentId = body.get("studentNumber").asLong();
-    UUID personId = UUID.fromString(body.get("person").asText());
-    return studentService.createStudent(personId, studentId);
+  public Student createStudent(@RequestBody Student student) {
+    return studentService.createStudent(student);
   }
 
   @PatchMapping("/{studentNumber}")
