@@ -2,17 +2,13 @@ package com.spring.study.university.University.services;
 
 import com.spring.study.university.University.domain.Person;
 import com.spring.study.university.University.domain.Professor;
-import com.spring.study.university.University.enums.RoleEnum;
-import com.spring.study.university.University.repositories.PersonRepository;
 import com.spring.study.university.University.repositories.ProfessorRepository;
+import com.spring.study.university.University.services.validations.ProfessorValidations;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,40 +16,31 @@ import java.util.UUID;
 public class ProfessorService {
 
   private final ProfessorRepository professorRepository;
-  private final PersonRepository personRepository;
+  private final ProfessorValidations professorValidations;
 
-  public Professor createProfessor(String personId) {
-    UUID uuid = UUID.fromString(personId);
-    Person person = personRepository
-        .findById(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-    Optional<Professor> professorSaved = professorRepository.findByUuid(uuid);
-
-    if (professorSaved.isPresent()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Professor already exists");
-    }
-
-    if (!person.getRole().getRole().name().equals(RoleEnum.Professor.name())) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-    }
+  public Professor createProfessor(Professor professor) {
+    professorValidations.validateProfessorNoExist(professor.getDocumentNumber());
 
     Professor professorToSave = new Professor();
-    professorToSave.setUuid(uuid);
+    Person person = new Person();
+    person.setName(professor.getName());
+    person.setEmail(professor.getEmail());
+    person.setLastName(professor.getLastName());
+    person.setDocumentNumber(professor.getDocumentNumber());
+
     professorToSave.setPerson(person);
+
+    professorValidations.validateProfessorConstraints(professor);
     return professorRepository.save(professorToSave);
   }
 
   public void deleteProfessor(UUID uuid) {
-    Professor professor = professorRepository.findByUuid(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+    Professor professor = professorValidations.validateIfProfessorExists(uuid);
     professorRepository.delete(professor);
   }
 
   public Professor editProfessor(UUID uuid, Professor professor) {
-    Professor professorSaved = professorRepository.findByUuid(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    Professor professorSaved = professorValidations.validateIfProfessorExists(uuid);
 
     if (professor.getName() != null) {
       professorSaved.setName(professor.getName());
@@ -70,8 +57,7 @@ public class ProfessorService {
   }
 
   public Professor getProfessor(UUID uuid) {
-    return professorRepository.findByUuid(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    return professorValidations.validateIfProfessorExists(uuid);
   }
 
   public List<Professor> getProfessors() {

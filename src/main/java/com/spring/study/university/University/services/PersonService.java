@@ -14,7 +14,7 @@ public class PersonService {
   private final PersonValidations personValidations;
 
   public Person createPerson(Person person) {
-    personValidations.validateIfPersonExists(person);
+    personValidations.validatePersonNoExists(person);
     personValidations.validatePersonFields(person);
 
     return personRepository.save(person);

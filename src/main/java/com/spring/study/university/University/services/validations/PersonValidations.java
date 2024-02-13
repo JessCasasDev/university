@@ -15,11 +15,18 @@ public class PersonValidations {
   private final PersonRepository personRepository;
   private final ConstraintValidations constraintValidations;
 
-  public void validateIfPersonExists(Person person) {
+  public void validatePersonNoExists(Person person) {
     personRepository.findByDocumentNumber(person.getDocumentNumber()).ifPresent(s -> {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     });
   }
+
+  public Person validatePersonExists(Long documentNumber) {
+    return personRepository
+        .findByDocumentNumber(documentNumber)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+  }
+
 
   public void validatePersonFields(Person person) {
     constraintValidations.validateFields(person);

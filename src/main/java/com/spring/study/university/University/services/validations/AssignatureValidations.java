@@ -75,13 +75,13 @@ public class AssignatureValidations {
   public void validateAssignaturePrerequisiteValid(Assignature assignature, Student student) {
     if (!assignature.getPrerequisites().isEmpty()) {
 
-      List<Assignature> prerequsites = new ArrayList<>(assignature.getPrerequisites()
+      List<Assignature> prerequisites = new ArrayList<>(assignature.getPrerequisites()
           .stream().map(prerequisite -> prerequisite.getAssignature()).toList());
 
       List<Grade> studentAssignatures = student
           .getGrades()
           .stream()
-          .filter(grade -> prerequsites.contains(grade.getAssignature())).toList();
+          .filter(grade -> prerequisites.contains(grade.getAssignature())).toList();
 
       if (studentAssignatures.isEmpty()) {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite required");
