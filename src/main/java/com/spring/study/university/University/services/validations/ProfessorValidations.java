@@ -1,6 +1,7 @@
 package com.spring.study.university.University.services.validations;
 
 import com.spring.study.university.University.domain.Professor;
+import com.spring.study.university.University.enums.RoleEnum;
 import com.spring.study.university.University.repositories.ProfessorRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class ProfessorValidations {
 
   private final ProfessorRepository professorRepository;
-
+  private final PersonValidations personValidations;
 
   public Professor validateIfProfessorExists(UUID uuid) {
     return professorRepository
@@ -22,5 +23,18 @@ public class ProfessorValidations {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor not found"));
   }
 
+  public void validateProfessorNoExist(Long documentNumber){
+    professorRepository.findByDocumentNumber(documentNumber).ifPresent(s -> {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    });
+  }
 
+
+  public void validateProfessorConstraints(Professor professor){
+    personValidations.validatePersonFields(professor.getPerson());
+
+    if (!professor.getRole().getRole().name().equals(RoleEnum.Professor.name())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+  }
 }

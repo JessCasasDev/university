@@ -1,6 +1,5 @@
 package com.spring.study.university.University.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.spring.study.university.University.domain.Professor;
 import com.spring.study.university.University.services.ProfessorService;
 import lombok.AllArgsConstructor;
@@ -24,9 +23,8 @@ public class ProfessorController {
   private final ProfessorService professorService;
 
   @PostMapping("")
-  public Professor createProfessor(@RequestBody JsonNode body){
-    String personId = body.get("person").asText();
-    return professorService.createProfessor(personId);
+  public Professor createProfessor(@RequestBody Professor professor){
+    return professorService.createProfessor(professor);
   }
 
   @GetMapping("")
