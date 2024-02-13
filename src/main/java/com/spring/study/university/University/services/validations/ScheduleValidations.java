@@ -25,4 +25,19 @@ public class ScheduleValidations {
 
     return schedulesList;
   }
+
+  public Schedule validateIfScheduleExists(UUID uuid) {
+    return scheduleRepository
+        .findById(uuid)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+  }
+
+  public void validateScheduleData(Schedule schedule){
+    if (scheduleRepository.findByDayAndInitialTimeAndEndTime(
+        schedule.getDay(),
+        schedule.getInitialTime(),
+        schedule.getEndTime()).isPresent()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schedule already exists");
+    }
+  }
 }
