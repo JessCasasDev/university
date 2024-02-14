@@ -20,7 +20,6 @@ public class StudentService {
   private final StudentRepository studentRepository;
   private final GradeRepository gradeRepository;
   private final StudentValidations studentValidations;
-  private final PersonValidations personValidations;
 
   public Student getStudentByStudentNumber(Long studentNumber) {
     return studentValidations.validateIfStudentExists(studentNumber);
@@ -29,16 +28,6 @@ public class StudentService {
   public Student createStudent(Student student) {
     studentValidations.validateStudentNoExists(student.getStudentNumber());
     studentValidations.validateStudentRole(student);
-
-    Person person = new Person();
-    person.setName(student.getName());
-    person.setEmail(student.getEmail());
-    person.setLastName(student.getLastName());
-    person.setDocumentNumber(student.getDocumentNumber());
-    person.setPhoneNumber(student.getPhoneNumber());
-    person.setRole(student.getRole());
-    personValidations.validatePersonNoExists(person);
-    personValidations.validatePersonFields(person);
 
     Student studentToSave = new Student();
     studentToSave.setPhoneNumber(student.getPhoneNumber());

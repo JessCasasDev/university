@@ -3,6 +3,7 @@ package com.spring.study.university.University.services.validations;
 import com.spring.study.university.University.domain.Professor;
 import com.spring.study.university.University.enums.RoleEnum;
 import com.spring.study.university.University.repositories.ProfessorRepository;
+import com.spring.study.university.University.utils.ConstraintValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.UUID;
 public class ProfessorValidations {
 
   private final ProfessorRepository professorRepository;
-  private final PersonValidations personValidations;
+  private final ConstraintValidations constraintValidations;
 
   public Professor validateIfProfessorExists(UUID uuid) {
     return professorRepository
@@ -30,11 +31,13 @@ public class ProfessorValidations {
   }
 
 
-  public void validateProfessorConstraints(Professor professor){
-    personValidations.validatePersonFields(professor.getPerson());
-
+  public void validateProfessorRole(Professor professor){
     if (!professor.getRole().getRole().name().equals(RoleEnum.Professor.name())) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
+  }
+
+  public void validateProfessorConstraints(Professor professor){
+    constraintValidations.validateFields(professor);
   }
 }

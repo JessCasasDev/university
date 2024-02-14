@@ -3,6 +3,7 @@ package com.spring.study.university.University.services;
 import com.spring.study.university.University.domain.Person;
 import com.spring.study.university.University.domain.Professor;
 import com.spring.study.university.University.repositories.ProfessorRepository;
+import com.spring.study.university.University.services.validations.PersonValidations;
 import com.spring.study.university.University.services.validations.ProfessorValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,18 +20,18 @@ public class ProfessorService {
   private final ProfessorValidations professorValidations;
 
   public Professor createProfessor(Professor professor) {
-    professorValidations.validateProfessorNoExist(professor.getDocumentNumber());
-
     Professor professorToSave = new Professor();
-    Person person = new Person();
-    person.setName(professor.getName());
-    person.setEmail(professor.getEmail());
-    person.setLastName(professor.getLastName());
-    person.setDocumentNumber(professor.getDocumentNumber());
+    professorToSave.setName(professor.getName());
+    professorToSave.setEmail(professor.getEmail());
+    professorToSave.setLastName(professor.getLastName());
+    professorToSave.setDocumentNumber(professor.getDocumentNumber());
+    professorToSave.setPhoneNumber(professor.getPhoneNumber());
+    professorToSave.setRole(professor.getRole());
 
-    professorToSave.setPerson(person);
+    professorValidations.validateProfessorRole(professorToSave);
+    professorValidations.validateProfessorNoExist(professorToSave.getDocumentNumber());
+    professorValidations.validateProfessorConstraints(professorToSave);
 
-    professorValidations.validateProfessorConstraints(professor);
     return professorRepository.save(professorToSave);
   }
 
