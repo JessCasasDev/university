@@ -23,6 +23,7 @@ public class AssignatureValidations {
 
   private final AssignatureRepository assignatureRepository;
   private final ConstraintValidations constraintValidations;
+  private final PrerequisiteValidators prerequisiteValidators;
 
   public Assignature validateIfAssignatureExists(UUID uuid) {
     return assignatureRepository
@@ -54,11 +55,13 @@ public class AssignatureValidations {
         .ifPresent(s -> {
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignature already taken");
         });
+
   }
 
   public void validatePrerequisite(Assignature assignature, List<UUID> prerequisites) {
     assignature
-        .getPrerequisites().stream()
+        .getPrerequisites()
+        .stream()
         .map(prerequisite -> prerequisite.getPrerequisite().getUuid())
         .filter(prerequisites::contains)
         .findAny()
@@ -66,13 +69,7 @@ public class AssignatureValidations {
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite already exists");
         });
 
-    prerequisites
-        .stream()
-        .filter(assignature.getUuid()::equals)
-        .findAny()
-        .ifPresent(s -> {
-          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignature cannot be part of prerequisites");
-        });
+    prerequisiteValidators.validateAssignatureAndPrerequisitesAreDifferent(prerequisites, assignature);
   }
 
   public void validateAssignaturePrerequisiteValid(Assignature assignature, Student student) {
