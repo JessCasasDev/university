@@ -28,7 +28,7 @@ public class AssignatureValidations {
   public Assignature validateIfAssignatureExists(UUID uuid) {
     return assignatureRepository
         .findById(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assignature no exists"));
   }
 
   public void validateAssignatureInformationCreation(Assignature assignature) {
@@ -36,7 +36,7 @@ public class AssignatureValidations {
         .findByNameAndCredits(assignature.getName(), assignature.getCredits());
 
     assignatureSaved.ifPresent(s -> {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignature already exists");
     });
 
     constraintValidations.validateFields(assignature);

@@ -18,17 +18,17 @@ public class StudentValidations {
 
   public Student validateIfStudentExists(Long id) {
     return studentRepository.findByStudentNumber(id).
-        orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
   }
 
   public void validateStudentNoExists(Long id) {
     studentRepository.findByStudentNumber(id).
-        ifPresent(s -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        ifPresent(s -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student already exists"));
   }
 
   public void validateStudentRole(Student student){
     if (!student.getRole().getRole().name().equals(RoleEnum.Student.name())) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Role");
     }
   }
 

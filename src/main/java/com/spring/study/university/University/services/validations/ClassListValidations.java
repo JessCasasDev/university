@@ -19,7 +19,7 @@ public class ClassListValidations {
 
   public ClassList validateIfClassListExists(UUID uuid) {
     return classListRepository.findById(uuid).orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        new ResponseStatusException(HttpStatus.NOT_FOUND, "Class List not found"));
   }
 
   public void validateIfClassIsFull(ClassList classList) {

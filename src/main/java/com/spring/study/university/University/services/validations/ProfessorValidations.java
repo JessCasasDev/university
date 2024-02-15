@@ -26,14 +26,14 @@ public class ProfessorValidations {
 
   public void validateProfessorNoExist(Long documentNumber){
     professorRepository.findByDocumentNumber(documentNumber).ifPresent(s -> {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Professor already exists");
     });
   }
 
 
   public void validateProfessorRole(Professor professor){
     if (!professor.getRole().getRole().name().equals(RoleEnum.Professor.name())) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Role");
     }
   }
 

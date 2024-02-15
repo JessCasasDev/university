@@ -29,7 +29,7 @@ public class ScheduleValidations {
   public Schedule validateIfScheduleExists(UUID uuid) {
     return scheduleRepository
         .findById(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found"));
   }
 
   public void validateScheduleData(Schedule schedule){

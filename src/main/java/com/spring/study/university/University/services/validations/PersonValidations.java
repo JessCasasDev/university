@@ -17,14 +17,14 @@ public class PersonValidations {
 
   public void validatePersonNoExists(Person person) {
     personRepository.findByDocumentNumber(person.getDocumentNumber()).ifPresent(s -> {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Person already exists");
     });
   }
 
   public Person validatePersonExists(Long documentNumber) {
     return personRepository
         .findByDocumentNumber(documentNumber)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found"));
   }
 
 
