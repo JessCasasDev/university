@@ -15,7 +15,7 @@ public class RoleValidations {
 
   public void validateRolIsValid(Role role) {
     if (!role.getRole().name().equals(RoleEnum.Student.name()) && !role.getRole().name().equals(RoleEnum.Professor.name()) && !role.getRole().name().equals(RoleEnum.Admin.name())) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Role");
     }
   }
 

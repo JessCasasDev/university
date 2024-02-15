@@ -34,7 +34,7 @@ public class GradeValidations {
 
   public Grade validateIfGradeExists(UUID uuid) {
     return gradeRepository.findById(uuid)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Grade not found"));
   }
 
   public void validateGradeFields(Grade grade) {
