@@ -1,72 +1,56 @@
 package com.spring.study.university.University.services;
 
 import com.spring.study.university.University.domain.Grade;
-import com.spring.study.university.University.domain.Person;
 import com.spring.study.university.University.domain.Student;
-import com.spring.study.university.University.repositories.GradeRepository;
-import com.spring.study.university.University.repositories.PersonRepository;
-import com.spring.study.university.University.repositories.StudentRepository;
-import com.spring.study.university.University.services.validations.PersonValidations;
+import com.spring.study.university.University.services.transactions.StudentTransactions;
 import com.spring.study.university.University.services.validations.StudentValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
 @AllArgsConstructor
 public class StudentService {
-  private final StudentRepository studentRepository;
-  private final GradeRepository gradeRepository;
+  private final StudentTransactions studentTransactions;
   private final StudentValidations studentValidations;
-
-  public Student getStudentByStudentNumber(Long studentNumber) {
-    return studentValidations.validateIfStudentExists(studentNumber);
-  }
+  private final GradeService gradeService;
 
   public Student createStudent(Student student) {
     studentValidations.validateStudentNoExists(student.getStudentNumber());
     studentValidations.validateStudentRole(student);
 
-    Student studentToSave = new Student();
-    studentToSave.setPhoneNumber(student.getPhoneNumber());
-    studentToSave.setName(student.getName());
-    studentToSave.setLastName(student.getLastName());
-    studentToSave.setEmail(student.getEmail());
-    studentToSave.setRole(student.getRole());
-    studentToSave.setDocumentNumber(student.getDocumentNumber());
-    studentToSave.setStudentNumber(student.getStudentNumber());
+    Student studentToSave = studentTransactions.createStudent(student);
 
     studentValidations.validateStudentFields(studentToSave);
 
-    return studentRepository.save(studentToSave);
+    return studentTransactions.saveStudent(studentToSave);
   }
 
   public Student updateStudent(Long studentNumber, Student student) {
-    Student student1 = studentValidations.validateIfStudentExists(studentNumber);
-    if (student.getName() != null) {
-      student1.setName(student.getName());
-    }
-    if (student.getLastName() != null) {
-      student1.setLastName(student.getLastName());
-    }
-    if (student.getPhoneNumber() != null) {
-      student1.setPhoneNumber(student.getPhoneNumber());
-    }
+    Student studentSaved = getStudent(studentNumber);
 
-    return studentRepository.save(student1);
+    Student studentUpdated = studentTransactions.updateStudent(studentSaved, student);
+    studentValidations.validateStudentFields(studentUpdated)
+    ;
+    return studentTransactions.saveStudent(studentUpdated);
   }
 
   public void deleteStudent(Long studentNumber) {
-    Student student = studentValidations.validateIfStudentExists(studentNumber);
+    Student student = getStudent(studentNumber);
 
-    studentRepository.delete(student);
+    studentTransactions.deleteStudent(student);
   }
 
   public Set<Grade> getStudentGrades(Long studentNumber) {
-    Student student = studentValidations.validateIfStudentExists(studentNumber);
+    Student student = getStudent(studentNumber);
 
-    return new HashSet<>(gradeRepository.findAllByStudent(student));
+    return gradeService.getGradesByStudent(student);
+  }
+
+  public Student getStudent(Long studentNumber){
+    Optional<Student> studentOptional = studentTransactions.getStudentByStudentNumber(studentNumber);
+    return studentValidations.validateIfStudentExists(studentOptional);
   }
 }

@@ -29,7 +29,7 @@ public class StudentController {
 
   @GetMapping("/{studentNumber}")
   public Student getStudentByStudentNumber(@PathVariable Long studentNumber) {
-    return studentService.getStudentByStudentNumber(studentNumber);
+    return studentService.getStudent(studentNumber);
   }
 
   @PostMapping("")

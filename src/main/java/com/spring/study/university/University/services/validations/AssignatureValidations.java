@@ -6,6 +6,7 @@ import com.spring.study.university.University.domain.Prerequisite;
 import com.spring.study.university.University.domain.Professor;
 import com.spring.study.university.University.domain.Student;
 import com.spring.study.university.University.repositories.AssignatureRepository;
+import com.spring.study.university.University.services.PrerequisiteService;
 import com.spring.study.university.University.utils.ConstraintValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,34 +22,28 @@ import java.util.UUID;
 @Service
 public class AssignatureValidations {
 
-  private final AssignatureRepository assignatureRepository;
   private final ConstraintValidations constraintValidations;
-  private final PrerequisiteValidators prerequisiteValidators;
+  private final PrerequisiteService prerequisiteService;
 
-  public Assignature validateIfAssignatureExists(UUID uuid) {
-    return assignatureRepository
-        .findById(uuid)
+  public Assignature validateIfAssignatureExists(Optional<Assignature> assignature) {
+    return assignature
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assignature no exists"));
   }
 
-  public void validateAssignatureInformationCreation(Assignature assignature) {
-    Optional<Assignature> assignatureSaved = assignatureRepository
-        .findByNameAndCredits(assignature.getName(), assignature.getCredits());
-
-    assignatureSaved.ifPresent(s -> {
+  public void validateAssignatureInformationCreation(Optional<Assignature> assignature) {
+    assignature.ifPresent(s -> {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignature already exists");
     });
 
     constraintValidations.validateFields(assignature);
   }
 
-  public void validateAssignatureTakenByProfessor(Assignature assignature, Professor professor) {
+  public void validateAssignatureTakenByProfessor(Assignature assignature, List<Assignature> assignaturesByProfessor ) {
     if (assignature.getProfessor() != null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Assignature already taken");
     }
 
-    assignatureRepository
-        .findByProfessor(professor)
+    assignaturesByProfessor
         .stream()
         .filter(assignature1 -> assignature1.equals(assignature))
         .findAny()
@@ -69,7 +64,7 @@ public class AssignatureValidations {
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prerequisite already exists");
         });
 
-    prerequisiteValidators.validateAssignatureAndPrerequisitesAreDifferent(prerequisites, assignature);
+    prerequisiteService.validateAssignatureAndPrerequisitesAreDifferent(prerequisites, assignature);
   }
 
   public void validateAssignaturePrerequisiteValid(Assignature assignature, Student student) {

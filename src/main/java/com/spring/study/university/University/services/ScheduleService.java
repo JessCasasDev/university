@@ -1,52 +1,53 @@
 package com.spring.study.university.University.services;
 
 import com.spring.study.university.University.domain.Schedule;
-import com.spring.study.university.University.repositories.ScheduleRepository;
+import com.spring.study.university.University.services.transactions.ScheduleTransactions;
 import com.spring.study.university.University.services.validations.ScheduleValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
 @Service
 public class ScheduleService {
 
-  private final ScheduleRepository scheduleRepository;
+  private final ScheduleTransactions scheduleTransactions;
   private final ScheduleValidations scheduleValidations;
 
   public Schedule createSchedule(Schedule schedule) {
-    scheduleValidations.validateScheduleData(schedule);
-    return scheduleRepository.save(schedule);
+    Optional<Schedule> scheduleOptional = scheduleTransactions.findByDayAndInitialTimeAndEndTime(schedule);
+    scheduleValidations.validateScheduleData(scheduleOptional);
+    return scheduleTransactions.saveSchedule(schedule);
   }
 
   public void deleteSchedule(UUID uuid) {
-    Schedule schedule = scheduleValidations.validateIfScheduleExists(uuid);
-    scheduleRepository.delete(schedule);
+    Schedule schedule = getSchedule(uuid);
+    scheduleTransactions.deleteSchedule(schedule);
+  }
+
+  private Schedule getSchedule(UUID uuid) {
+    Optional<Schedule> scheduleOptional = scheduleTransactions.getSchedule(uuid);
+    return scheduleValidations.validateIfScheduleExists(scheduleOptional);
   }
 
   public Schedule updateSchedule(UUID uuid, Schedule schedule) {
-    Schedule scheduleSaved = scheduleValidations.validateIfScheduleExists(uuid);
+    Schedule scheduleSaved = getSchedule(uuid);
 
-    if (schedule.getDay() != null) {
-      scheduleSaved.setDay(schedule.getDay());
-    }
-    if (schedule.getInitialTime() != null) {
-      scheduleSaved.setInitialTime(schedule.getInitialTime());
-    }
-    if (schedule.getEndTime() != null) {
-      scheduleSaved.setEndTime(schedule.getEndTime());
-    }
-
-    scheduleValidations.validateScheduleData(scheduleSaved);
-    return scheduleRepository.save(scheduleSaved);
+    Schedule scheduleEdited = scheduleTransactions.editSchedule(scheduleSaved, schedule);
+    Optional<Schedule> scheduleOptional = scheduleTransactions.findByDayAndInitialTimeAndEndTime(scheduleEdited);
+    scheduleValidations.validateScheduleData(scheduleOptional);
+    return scheduleTransactions.saveSchedule(scheduleEdited);
   }
 
   public List<Schedule> getSchedules() {
-    List<Schedule> schedules = new ArrayList<>();
-    scheduleRepository.findAll().forEach(schedules::add);
-    return schedules;
+    return scheduleTransactions.getSchedules();
+  }
+
+  public List<Schedule> findSchedules(List<UUID> list) {
+    List<Schedule> schedules = scheduleTransactions.findSchedules(list);
+    return scheduleValidations.validateSchedulesExists(schedules);
   }
 }
