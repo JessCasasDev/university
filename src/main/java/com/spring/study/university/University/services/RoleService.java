@@ -1,22 +1,25 @@
 package com.spring.study.university.University.services;
 
 import com.spring.study.university.University.domain.Role;
-import com.spring.study.university.University.repositories.RoleRepository;
+import com.spring.study.university.University.services.transactions.RoleTransactions;
 import com.spring.study.university.University.services.validations.RoleValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 
 @Service
 @AllArgsConstructor
 public class RoleService {
 
-  private final RoleRepository roleRepository;
+  private final RoleTransactions roleTransactions;
   private final RoleValidations roleValidations;
 
   public Role saveRole(Role role) {
     roleValidations.validateRolIsValid(role);
-    roleValidations.validateIfRoleNoExists(role);
-    return roleRepository.save(role);
+    Optional<Role> roleOptional = roleTransactions.getRole(role);
+    roleValidations.validateIfRoleNoExists(roleOptional);
+    return roleTransactions.saveRole(role);
   }
 }

@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class StudentValidations {
@@ -16,8 +18,8 @@ public class StudentValidations {
   private final ConstraintValidations constraintValidations;
 
 
-  public Student validateIfStudentExists(Long id) {
-    return studentRepository.findByStudentNumber(id).
+  public Student validateIfStudentExists(Optional<Student> student) {
+    return student.
         orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
   }
 

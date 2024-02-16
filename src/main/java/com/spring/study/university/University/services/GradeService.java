@@ -3,45 +3,53 @@ package com.spring.study.university.University.services;
 import com.spring.study.university.University.domain.Assignature;
 import com.spring.study.university.University.domain.Grade;
 import com.spring.study.university.University.domain.Student;
-import com.spring.study.university.University.repositories.GradeRepository;
-import com.spring.study.university.University.services.validations.AssignatureValidations;
+import com.spring.study.university.University.services.transactions.GradeTransactions;
 import com.spring.study.university.University.services.validations.GradeValidations;
-import com.spring.study.university.University.services.validations.StudentValidations;
+
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
 @Service
 public class GradeService {
-  private final GradeRepository gradeRepository;
+  private final GradeTransactions gradeTransactions;
   private final GradeValidations gradeValidations;
-  private final StudentValidations studentValidations;
-  private final AssignatureValidations assignatureValidations;
+  private final StudentService studentService;
+  private final AssignatureService assignatureService;
 
   public Grade createGrade(Long studentId, String assignatureId, Float grade) {
     gradeValidations.validateGradeValue(grade);
 
-    Student student = studentValidations.validateIfStudentExists(studentId);
-    Assignature assignature = assignatureValidations
-        .validateIfAssignatureExists(UUID.fromString(assignatureId));
+    Student student = studentService.getStudent(studentId);
+    Assignature assignature = assignatureService.getAssignature(UUID.fromString(assignatureId));
 
-    gradeValidations.validateIfGradeExistsForStudent(student, assignature);
+    Optional<Grade> gradeByStudentAndAssignature = gradeTransactions.findByStudentAndAssignature(assignature, student);
+    gradeValidations.validateIfGradeExistsForStudent(gradeByStudentAndAssignature);
 
-    Grade gradeObj = new Grade();
-    gradeObj.setGrade(grade);
-    gradeObj.setAssignature(assignature);
-    gradeObj.setStudent(student);
+    Grade gradeToSave = gradeTransactions.createGrade(grade, assignature, student);
 
-    gradeValidations.validateGradeFields(gradeObj);
+    gradeValidations.validateGradeFields(gradeToSave);
 
-    return gradeRepository.save(gradeObj);
+    return gradeTransactions.saveGrade(gradeToSave);
   }
 
   public Grade updateGrade(UUID uuid, Float grade) {
-    Grade gradeObj = gradeValidations.validateIfGradeExists(uuid);
+    Grade gradeObj = getGradeByUUID(uuid);
     gradeObj.setGrade(grade);
-    return gradeRepository.save(gradeObj);
+    return gradeTransactions.saveGrade(gradeObj);
+  }
+
+  public Grade getGradeByUUID(UUID uuid) {
+    Optional<Grade> gradeOptional = gradeTransactions.getGradeByIDD(uuid);
+
+    return gradeValidations.validateIfGradeExists(gradeOptional);
+  }
+
+  public Set<Grade> getGradesByStudent(Student student) {
+    return gradeTransactions.getGradesByStudent(student);
   }
 }

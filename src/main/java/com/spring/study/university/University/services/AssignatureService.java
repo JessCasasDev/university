@@ -3,15 +3,16 @@ package com.spring.study.university.University.services;
 import com.spring.study.university.University.domain.Assignature;
 import com.spring.study.university.University.domain.Prerequisite;
 import com.spring.study.university.University.domain.Professor;
-import com.spring.study.university.University.repositories.AssignatureRepository;
 
+import com.spring.study.university.University.domain.Student;
+import com.spring.study.university.University.services.transactions.AssignatureTransactions;
 import com.spring.study.university.University.services.validations.AssignatureValidations;
-import com.spring.study.university.University.services.validations.ProfessorValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -19,63 +20,60 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AssignatureService {
 
-  private final AssignatureRepository assignatureRepository;
-  private final ProfessorValidations professorValidations;
+  private final AssignatureTransactions assignatureTransactions;
   private final AssignatureValidations assignatureValidations;
-
+  private final ProfessorService professorService;
 
   public Assignature createAssignature(Assignature assignature) {
-    assignatureValidations.validateAssignatureInformationCreation(assignature);
+    Optional<Assignature> assignatureOptional = assignatureTransactions
+        .findByNameAndCredits(assignature.getName(), assignature.getCredits());
+    assignatureValidations.validateAssignatureInformationCreation(assignatureOptional);
 
-    return assignatureRepository.save(assignature);
+    return assignatureTransactions.saveAssignature(assignature);
   }
 
-  public Assignature editAssignature(UUID uuid, Assignature assignature) {
-    Assignature assignatureSaved = assignatureValidations.validateIfAssignatureExists(uuid);
+  public Assignature editAssignature(UUID uuid, Assignature assignatureNew) {
+    Assignature assignature = getAssignature(uuid);
 
-    if (assignature.getName() != null) {
-      assignatureSaved.setName(assignature.getName());
-    }
-    if (assignature.getCredits() != null) {
-      assignatureSaved.setCredits(assignature.getCredits());
-    }
-
-    return assignatureRepository.save(assignatureSaved);
+    return assignatureTransactions.updateAssignature(assignature, assignatureNew);
   }
 
   public void deleteAssignature(UUID uuid) {
-    Assignature assignature = assignatureValidations.validateIfAssignatureExists(uuid);
+    Assignature assignature = getAssignature(uuid);
 
-    assignatureRepository.delete(assignature);
+    assignatureTransactions.deleteAssignature(assignature);
   }
 
   public List<Assignature> getAssignatures() {
-    List<Assignature> assignatures = new ArrayList<>();
-
-    assignatureRepository.findAll().forEach(assignature -> assignatures.add(assignature));
-
-    return assignatures;
+    return assignatureTransactions.getAllAssignatures();
   }
 
   public Assignature getAssignature(UUID uuid) {
-    return assignatureValidations.validateIfAssignatureExists(uuid);
+    Optional<Assignature> assignatureOptional = assignatureTransactions.findById(uuid);
+    return assignatureValidations.validateIfAssignatureExists(assignatureOptional);
   }
 
   public Assignature assignProfessor(UUID uuid, String professorUuid) {
-    Assignature assignature = assignatureValidations.validateIfAssignatureExists(uuid);
-    Professor professor = professorValidations.validateIfProfessorExists(UUID.fromString(professorUuid));
-
-    assignatureValidations.validateAssignatureTakenByProfessor(assignature, professor);
+    Assignature assignature = getAssignature(uuid);
+    UUID professorId = UUID.fromString(professorUuid);
+    Professor professor = professorService.getProfessor(professorId);
+    List<Assignature> professorAssignatures = assignatureTransactions.findByProfessor(professor);
+    assignatureValidations.validateAssignatureTakenByProfessor(assignature, professorAssignatures);
 
     assignature.setProfessor(professor);
 
-    return assignatureRepository.save(assignature);
+    return assignatureTransactions.saveAssignature(assignature);
   }
 
   public Assignature addPrerequisite(UUID uuid, ArrayList<String> prerequisites) {
-    Assignature assignature = assignatureValidations.validateIfAssignatureExists(uuid);
-    List<UUID> prerequisitesUUID = prerequisites.stream().map(UUID::fromString).toList();
-    List<Assignature> assignatures = (List) assignatureRepository.findAllById(prerequisitesUUID);
+    Assignature assignature = getAssignature(uuid);
+
+    List<UUID> prerequisitesUUID = prerequisites
+        .stream()
+        .map(UUID::fromString)
+        .toList();
+
+    List<Assignature> assignatures = assignatureTransactions.findAssignaturesByIds(prerequisitesUUID);
 
     assignatureValidations.validatePrerequisite(assignature, prerequisitesUUID);
 
@@ -85,6 +83,10 @@ public class AssignatureService {
       assignature.addPrerequisite(prerequisite);
     });
 
-    return assignatureRepository.save(assignature);
+    return assignatureTransactions.saveAssignature(assignature);
+  }
+
+  public void getPrerequisitesValidations(Assignature assignature, Student student) {
+    assignatureValidations.validateAssignaturePrerequisiteValid(assignature, student);
   }
 }
