@@ -9,6 +9,7 @@ import com.spring.study.university.University.services.transactions.AssignatureT
 import com.spring.study.university.University.services.validations.AssignatureValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class AssignatureService {
   private final AssignatureValidations assignatureValidations;
   private final ProfessorService professorService;
 
+  @Transactional
   public Assignature createAssignature(Assignature assignature) {
     Optional<Assignature> assignatureOptional = assignatureTransactions
         .findByNameAndCredits(assignature.getName(), assignature.getCredits());
@@ -32,12 +34,14 @@ public class AssignatureService {
     return assignatureTransactions.saveAssignature(assignature);
   }
 
+  @Transactional
   public Assignature editAssignature(UUID uuid, Assignature assignatureNew) {
     Assignature assignature = getAssignature(uuid);
 
     return assignatureTransactions.updateAssignature(assignature, assignatureNew);
   }
 
+  @Transactional
   public void deleteAssignature(UUID uuid) {
     Assignature assignature = getAssignature(uuid);
 
@@ -53,6 +57,7 @@ public class AssignatureService {
     return assignatureValidations.validateIfAssignatureExists(assignatureOptional);
   }
 
+  @Transactional
   public Assignature assignProfessor(UUID uuid, String professorUuid) {
     Assignature assignature = getAssignature(uuid);
     UUID professorId = UUID.fromString(professorUuid);
@@ -65,6 +70,7 @@ public class AssignatureService {
     return assignatureTransactions.saveAssignature(assignature);
   }
 
+  @Transactional
   public Assignature addPrerequisite(UUID uuid, ArrayList<String> prerequisites) {
     Assignature assignature = getAssignature(uuid);
 

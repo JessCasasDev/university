@@ -9,6 +9,7 @@ import com.spring.study.university.University.services.validations.ClassListVali
 import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class ClassListService {
   private final StudentService studentService;
 
 
+  @Transactional
   public ClassList createClassList(String assignatureId, List<String> schedules, Integer maxNumberOfStudents) {
     Assignature assignature = assignatureService.getAssignature(UUID.fromString(assignatureId));
 
@@ -39,6 +41,7 @@ public class ClassListService {
     return classListTransactions.saveClassList(classList);
   }
 
+  @Transactional
   public ClassList addStudent(UUID uuid, Long studentId) {
     ClassList classList = getClassList(uuid);
 
@@ -53,6 +56,7 @@ public class ClassListService {
     return classListTransactions.saveClassList(classList);
   }
 
+  @Transactional
   public ClassList removeStudent(UUID uuid, Long studentId) {
     ClassList classList = getClassList(uuid);
     Student student = studentService.getStudent(studentId);

@@ -5,6 +5,7 @@ import com.spring.study.university.University.services.transactions.RoleTransact
 import com.spring.study.university.University.services.validations.RoleValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ public class RoleService {
   private final RoleTransactions roleTransactions;
   private final RoleValidations roleValidations;
 
+  @Transactional
   public Role saveRole(Role role) {
     roleValidations.validateRolIsValid(role);
     Optional<Role> roleOptional = roleTransactions.getRole(role);

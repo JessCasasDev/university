@@ -1,7 +1,6 @@
 package com.spring.study.university.University.services.transactions;
 
 import com.spring.study.university.University.domain.Student;
-import com.spring.study.university.University.repositories.ScheduleRepository;
 import com.spring.study.university.University.repositories.StudentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -9,8 +9,4 @@ import java.util.UUID;
 public interface StudentRepository extends CrudRepository<Student, UUID> {
 
   Optional<Student> findByStudentNumber(Long studentNumber);
-
-  Optional<Student> findByDocumentNumber(Long documentNumber);
-
-
 }
