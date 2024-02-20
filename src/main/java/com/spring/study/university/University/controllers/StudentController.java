@@ -1,6 +1,5 @@
 package com.spring.study.university.University.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.spring.study.university.University.domain.Grade;
 import com.spring.study.university.University.domain.Student;
 import com.spring.study.university.University.services.StudentService;
@@ -15,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.List;
 
 @RequestMapping("/student")
 @RestController
@@ -49,7 +47,7 @@ public class StudentController {
   }
 
   @GetMapping("/{studentNumber}/grades")
-  public Set<Grade> getStudentGrades(@PathVariable Long studentNumber) {
+  public List<Grade> getStudentGrades(@PathVariable Long studentNumber) {
     return studentService.getStudentGrades(studentNumber);
   }
 }

@@ -5,6 +5,7 @@ import com.spring.study.university.University.services.transactions.ProfessorTra
 import com.spring.study.university.University.services.validations.ProfessorValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ public class ProfessorService {
   private final ProfessorTransactions professorTransactions;
   private final ProfessorValidations professorValidations;
 
+  @Transactional
   public Professor createProfessor(Professor professor) {
     Optional<Professor> professorOptional = professorTransactions.getProfessorByDocument(professor.getDocumentNumber());
     professorValidations.validateProfessorNoExist(professorOptional);
@@ -28,11 +30,13 @@ public class ProfessorService {
     return professorTransactions.saveProfessor(professor);
   }
 
+  @Transactional
   public void deleteProfessor(UUID uuid) {
     Professor professor = getProfessor(uuid);
     professorTransactions.deleteProfessor(professor);
   }
 
+  @Transactional
   public Professor editProfessor(UUID uuid, Professor professor) {
     Professor professorSaved = getProfessor(uuid);
     Professor professorEdited = professorTransactions.editProfessor(professorSaved, professor);

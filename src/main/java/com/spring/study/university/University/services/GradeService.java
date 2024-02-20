@@ -8,6 +8,7 @@ import com.spring.study.university.University.services.validations.GradeValidati
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
@@ -21,6 +22,7 @@ public class GradeService {
   private final StudentService studentService;
   private final AssignatureService assignatureService;
 
+  @Transactional
   public Grade createGrade(Long studentId, String assignatureId, Float grade) {
     gradeValidations.validateGradeValue(grade);
 
@@ -37,6 +39,7 @@ public class GradeService {
     return gradeTransactions.saveGrade(gradeToSave);
   }
 
+  @Transactional
   public Grade updateGrade(UUID uuid, Float grade) {
     Grade gradeObj = getGradeByUUID(uuid);
     gradeObj.setGrade(grade);
@@ -47,9 +50,5 @@ public class GradeService {
     Optional<Grade> gradeOptional = gradeTransactions.getGradeByIDD(uuid);
 
     return gradeValidations.validateIfGradeExists(gradeOptional);
-  }
-
-  public Set<Grade> getGradesByStudent(Student student) {
-    return gradeTransactions.getGradesByStudent(student);
   }
 }

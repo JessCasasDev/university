@@ -6,17 +6,18 @@ import com.spring.study.university.University.services.transactions.StudentTrans
 import com.spring.study.university.University.services.validations.StudentValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
 public class StudentService {
   private final StudentTransactions studentTransactions;
   private final StudentValidations studentValidations;
-  private final GradeService gradeService;
 
+  @Transactional
   public Student createStudent(Student student) {
     studentValidations.validateStudentNoExists(student.getStudentNumber());
     studentValidations.validateStudentRole(student);
@@ -28,29 +29,30 @@ public class StudentService {
     return studentTransactions.saveStudent(studentToSave);
   }
 
+  @Transactional
   public Student updateStudent(Long studentNumber, Student student) {
     Student studentSaved = getStudent(studentNumber);
 
     Student studentUpdated = studentTransactions.updateStudent(studentSaved, student);
-    studentValidations.validateStudentFields(studentUpdated)
-    ;
+    studentValidations.validateStudentFields(studentUpdated)    ;
     return studentTransactions.saveStudent(studentUpdated);
   }
 
+  @Transactional
   public void deleteStudent(Long studentNumber) {
     Student student = getStudent(studentNumber);
 
     studentTransactions.deleteStudent(student);
   }
 
-  public Set<Grade> getStudentGrades(Long studentNumber) {
-    Student student = getStudent(studentNumber);
-
-    return gradeService.getGradesByStudent(student);
-  }
-
   public Student getStudent(Long studentNumber){
     Optional<Student> studentOptional = studentTransactions.getStudentByStudentNumber(studentNumber);
     return studentValidations.validateIfStudentExists(studentOptional);
+  }
+
+  public List<Grade> getStudentGrades(Long studentNumber) {
+    Student student = getStudent(studentNumber);
+
+    return  student.getGrades();
   }
 }

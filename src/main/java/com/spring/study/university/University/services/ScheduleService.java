@@ -5,6 +5,7 @@ import com.spring.study.university.University.services.transactions.ScheduleTran
 import com.spring.study.university.University.services.validations.ScheduleValidations;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,12 +18,14 @@ public class ScheduleService {
   private final ScheduleTransactions scheduleTransactions;
   private final ScheduleValidations scheduleValidations;
 
+  @Transactional
   public Schedule createSchedule(Schedule schedule) {
     Optional<Schedule> scheduleOptional = scheduleTransactions.findByDayAndInitialTimeAndEndTime(schedule);
     scheduleValidations.validateScheduleData(scheduleOptional);
     return scheduleTransactions.saveSchedule(schedule);
   }
 
+  @Transactional
   public void deleteSchedule(UUID uuid) {
     Schedule schedule = getSchedule(uuid);
     scheduleTransactions.deleteSchedule(schedule);
@@ -33,6 +36,7 @@ public class ScheduleService {
     return scheduleValidations.validateIfScheduleExists(scheduleOptional);
   }
 
+  @Transactional
   public Schedule updateSchedule(UUID uuid, Schedule schedule) {
     Schedule scheduleSaved = getSchedule(uuid);
 
