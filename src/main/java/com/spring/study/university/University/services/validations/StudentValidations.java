@@ -34,7 +34,7 @@ public class StudentValidations {
     }
   }
 
-  public void validateStudentFields(Student studentToSave) {
-    constraintValidations.validateFields(studentToSave);
+  public void validateStudentFields(Student student) {
+    constraintValidations.validateFields(student);
   }
 }
