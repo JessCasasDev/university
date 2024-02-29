@@ -112,15 +112,18 @@ class StudentServiceTest {
     Student student = getStudent1();
     when(studentService.getStudent(student.getStudentNumber())).thenReturn(student);
 
-    Student studentUpdated = new Student();
-    studentUpdated.setUuid(student.getUuid());
-    studentUpdated.setPhoneNumber(PHONE_NUMBER);
-    studentUpdated.setRole(student.getRole());
-    studentUpdated.setStudentNumber(student.getStudentNumber());
-    studentUpdated.setEmail(student.getEmail());
-    studentUpdated.setName(NAME);
-    studentUpdated.setLastName(LAST_NAME);
-    studentUpdated.setDocumentNumber(student.getDocumentNumber());
+    Student studentUpdated = Student
+        .builder()
+        .uuid(student.getUuid())
+        .phoneNumber(PHONE_NUMBER)
+        .role(student.getRole())
+        .studentNumber(student.getStudentNumber())
+        .email(student.getEmail())
+        .name(NAME)
+        .lastName(LAST_NAME)
+        .documentNumber(student.getDocumentNumber())
+        .build();
+
     when(studentTransactions.updateStudent(student, studentUpdated)).thenReturn(studentUpdated);
     when(studentTransactions.saveStudent(studentUpdated)).thenReturn(studentUpdated);
 
@@ -155,12 +158,19 @@ class StudentServiceTest {
   @Test
   void getStudentGrades() {
     Student student = getStudent1();
-    Grade grade = new Grade();
-    grade.setStudent(student);
-    Assignature assignature = new Assignature();
-    assignature.setName("1");
-    assignature.setCredits(1);
-    grade.setAssignature(assignature);
+
+    Assignature assignature = Assignature
+        .builder()
+        .name("1")
+        .credits(1)
+        .build();
+
+    Grade grade = Grade
+        .builder()
+        .assignature(assignature)
+        .student(student)
+        .build();
+
     List<Grade> result = new ArrayList<>();
     result.add(grade);
     student.setGrades(result);
@@ -175,14 +185,16 @@ class StudentServiceTest {
 
 
   private Student getStudent1() {
-    Student student = new Student();
-    student.setLastName("Student1");
-    student.setStudentNumber(STUDENT_NUMBER);
-    student.setName("Roberto");
-    student.setDocumentNumber(123L);
-    student.setPhoneNumber(123L);
-    student.setUuid(UUID.randomUUID());
-    student.setEmail("email@email.com");
+    Student student = Student
+        .builder()
+        .lastName("Student1")
+        .studentNumber(STUDENT_NUMBER)
+        .name("Roberto")
+        .documentNumber(123L)
+        .phoneNumber(123L)
+        .uuid(UUID.randomUUID())
+        .email("email@email.com")
+        .build();
     return student;
   }
 }

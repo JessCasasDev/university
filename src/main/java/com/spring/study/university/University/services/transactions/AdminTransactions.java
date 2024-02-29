@@ -19,13 +19,13 @@ public class AdminTransactions {
   }
 
   public Admin createAdmin(Admin admin) {
-    Admin newAdmin = new Admin();
-    newAdmin.setDocumentNumber(admin.getDocumentNumber());
-    newAdmin.setEmail(admin.getEmail());
-    newAdmin.setName(admin.getName());
-    newAdmin.setLastName(admin.getLastName());
-    newAdmin.setRole(admin.getRole());
-    newAdmin.setPhoneNumber(admin.getPhoneNumber());
+    Admin newAdmin = Admin.builder()
+        .documentNumber(admin.getDocumentNumber())
+        .email(admin.getEmail())
+        .name(admin.getName())
+        .lastName(admin.getLastName())
+        .role(admin.getRole())
+        .phoneNumber(admin.getPhoneNumber()).build();
 
     return newAdmin;
   }

@@ -15,7 +15,9 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -24,6 +26,8 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name="person")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Person implements Serializable {
@@ -59,4 +63,13 @@ public class Person implements Serializable {
   @NotNull(message = "Role is required")
   public Role role;
 
+  public Person(UUID uuid, String name, String lastName, String email, Long documentNumber, Long phoneNumber, Role role) {
+    this.uuid = uuid;
+    this.name = name;
+    this.lastName = lastName;
+    this.email = email;
+    this.documentNumber = documentNumber;
+    this.phoneNumber = phoneNumber;
+    this.role = role;
+  }
 }

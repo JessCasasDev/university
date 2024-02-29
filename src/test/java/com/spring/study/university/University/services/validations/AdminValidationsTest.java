@@ -108,12 +108,18 @@ class AdminValidationsTest {
 
 
   private Admin createAdmin() {
-    Admin admin = new Admin();
-    admin.setName("Admin");
-    admin.setLastName("Lastname");
-    admin.setPhoneNumber(1234567L);
-    admin.setEmail("admin@email.com");
-    admin.setRole(new Role(RoleEnum.Admin));
+    Role role = Role.builder()
+        .role(RoleEnum.Admin)
+        .build();
+
+    Admin admin = Admin.builder()
+        .name("Admin")
+        .lastName("Lastname")
+        .phoneNumber(1234567L)
+        .email("admin@email.com")
+        .role(role)
+        .build();
+
 
     return admin;
   }
