@@ -1,6 +1,7 @@
 package com.spring.study.university.University.domain;
 
 
+import com.spring.study.university.University.domain.DTO.GradeDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +27,7 @@ public class Grade implements Serializable {
   private UUID uuid;
 
   @Column(name="grade")
-  @Range(min=0, max = 5, message = "The grade value must be between 0 and 5")
+  @Range(min=0, max = 5, message = "Grade value must be between 0 and 5")
   private Float grade;
 
   @ManyToOne
@@ -38,4 +39,13 @@ public class Grade implements Serializable {
   @JoinColumn(name = "assignature")
   @NotNull
   private Assignature assignature;
+
+  public Grade(GradeDTO grade) {
+    this.uuid = grade.getUUID();
+    this.grade = grade.getGrade();
+  }
+
+  public Grade() {
+
+  }
 }

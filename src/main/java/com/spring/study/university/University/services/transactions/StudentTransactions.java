@@ -1,10 +1,14 @@
 package com.spring.study.university.University.services.transactions;
 
+import com.spring.study.university.University.domain.Grade;
 import com.spring.study.university.University.domain.Student;
+import com.spring.study.university.University.domain.DTO.GradeDTO;
 import com.spring.study.university.University.repositories.StudentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -50,5 +54,13 @@ public class StudentTransactions {
     }
 
     return studentSaved;
+  }
+
+  public List<Grade> getGradesByStudent(Student student) {
+    List<GradeDTO> grades = studentRepository.getGradesByStudentNumber(student.documentNumber);
+    List<Grade> grades1 = new ArrayList<>();
+    grades.forEach(
+        g -> grades1.add(new Grade(g)));
+    return grades1;
   }
 }

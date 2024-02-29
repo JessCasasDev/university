@@ -32,5 +32,5 @@ public class Student extends Person implements Serializable {
 
   @OneToMany(cascade =  CascadeType.ALL, mappedBy = "student")
   @JsonIgnore
-  private  List<Grade> grades = new ArrayList<>();
+  private List<Grade> grades = new ArrayList<>();
 }
