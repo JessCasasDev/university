@@ -37,8 +37,4 @@ public class GradeTransactions {
   public Optional<Grade> findByStudentAndAssignature(Assignature assignature, Student student) {
     return gradeRepository.findByStudentAndAssignature(student, assignature);
   }
-
-  public Set<Grade> getGradesByStudent(Student student) {
-    return (Set<Grade>) gradeRepository.findAllByStudent(student);
-  }
 }

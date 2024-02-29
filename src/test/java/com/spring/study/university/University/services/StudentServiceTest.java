@@ -21,10 +21,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -167,7 +169,7 @@ class StudentServiceTest {
 
     List<Grade> grades = studentService.getStudentGrades(student.getStudentNumber());
 
-    assertEquals(grades.getFirst(), result.getFirst());
+    assertTrue(grades.contains(result.getFirst()));
     assertEquals(grades.size(), result.size());
   }
 

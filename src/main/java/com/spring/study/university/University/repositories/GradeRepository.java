@@ -12,6 +12,4 @@ import java.util.UUID;
 public interface GradeRepository extends CrudRepository<Grade, UUID> {
 
   Optional<Grade> findByStudentAndAssignature(Student student, Assignature assignature);
-
-  List<Grade> findAllByStudent(Student student);
 }

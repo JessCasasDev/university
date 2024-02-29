@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -15,14 +16,18 @@ public class ConstraintValidations {
   private final Validator validator;
 
   public void validateFields(Object obj) {
-    Set<ConstraintViolation<Object>> violations = validator.validate(obj);
-
-    if (!violations.isEmpty()) {
-      StringBuilder sb = new StringBuilder();
-      for (ConstraintViolation<Object> constraintViolation : violations) {
-        sb.append(constraintViolation.getMessage());
-      }
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error occurred: " + sb.toString());
+    //for (ConstraintViolation<Object> constraintViolation : violations) {
+    //        sb.append(constraintViolation.getMessage());
+    //      }
+    StringBuilder sb = new StringBuilder();
+    Set<ConstraintViolation<Object>> validators = validator.validate(obj);
+    if(validators.size()>0) {
+      validators.stream()
+          .map(i -> sb.append(" ").append(i.getMessage()))
+          .filter(x -> sb.length() == validators.size())
+          .findAny()
+          .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Errors occurred: " + sb));
     }
+
   }
 }

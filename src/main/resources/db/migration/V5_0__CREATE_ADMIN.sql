@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS ADMINS (
+    uuid UUID PRIMARY KEY,
+    constraint uuid FOREIGN KEY(uuid) REFERENCES PERSON(uuid)
+);

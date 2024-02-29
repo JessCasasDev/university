@@ -4,24 +4,22 @@ import com.spring.study.university.University.domain.Grade;
 import com.spring.study.university.University.domain.Student;
 import com.spring.study.university.University.services.transactions.StudentTransactions;
 import com.spring.study.university.University.services.validations.StudentValidations;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+@AllArgsConstructor
 @Service
 public class StudentService {
-  @Autowired
-  private final StudentTransactions studentTransactions;
-  @Autowired
-  private final StudentValidations studentValidations;
 
-  public StudentService(StudentTransactions studentTransactions, StudentValidations studentValidations) {
-    this.studentTransactions = studentTransactions;
-    this.studentValidations = studentValidations;
-  }
+  private final StudentTransactions studentTransactions;
+
+  private final StudentValidations studentValidations;
 
   @Transactional
   public Student createStudent(Student student) {
@@ -58,7 +56,6 @@ public class StudentService {
 
   public List<Grade> getStudentGrades(Long studentNumber) {
     Student student = getStudent(studentNumber);
-
-    return  student.getGrades();
+    return studentTransactions.getGradesByStudent(student);
   }
 }
