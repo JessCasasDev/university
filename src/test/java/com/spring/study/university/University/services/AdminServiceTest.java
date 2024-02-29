@@ -36,7 +36,7 @@ class AdminServiceTest {
   AdminService adminService;
 
   @BeforeEach
-  public void setup(){
+  public void setup() {
     MockitoAnnotations.openMocks(this);
     adminService = new AdminService(adminTransactions, adminValidations);
   }
@@ -72,11 +72,12 @@ class AdminServiceTest {
     Admin admin = createAdmin();
     admin.setUuid(UUID.randomUUID());
 
-    Admin newAdmin = new Admin();
-    newAdmin.setUuid(admin.getUuid());
-    newAdmin.setName("Another name");
-    newAdmin.setEmail("another_email@email.com");
-    newAdmin.setLastName("Another LastName");
+    Admin newAdmin = Admin.builder()
+        .uuid(admin.getUuid())
+        .name("Another name")
+        .email("another_email@email.com")
+        .lastName("Another LastName")
+        .build();
 
     Admin result = new Admin();
     BeanUtils.copyProperties(admin, result);
@@ -109,12 +110,17 @@ class AdminServiceTest {
 
 
   private Admin createAdmin() {
-    Admin admin = new Admin();
-    admin.setName("Admin");
-    admin.setLastName("Lastname");
-    admin.setPhoneNumber(1234567L);
-    admin.setEmail("admin@email.com");
-    admin.setRole(new Role(RoleEnum.Admin));
+    Role role = Role.builder()
+        .role(RoleEnum.Admin)
+        .build();
+
+    Admin admin = Admin.builder()
+        .name("Admin")
+        .lastName("Lastname")
+        .phoneNumber(1234567L)
+        .email("admin@email.com")
+        .role(role)
+        .build();
 
     return admin;
   }

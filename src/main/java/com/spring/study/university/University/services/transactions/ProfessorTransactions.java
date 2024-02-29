@@ -16,13 +16,13 @@ public class ProfessorTransactions {
   private final ProfessorRepository professorRepository;
 
   public Professor createProfessor(Professor professor) {
-    Professor professorToSave = new Professor();
-    professorToSave.setName(professor.getName());
-    professorToSave.setEmail(professor.getEmail());
-    professorToSave.setLastName(professor.getLastName());
-    professorToSave.setDocumentNumber(professor.getDocumentNumber());
-    professorToSave.setPhoneNumber(professor.getPhoneNumber());
-    professorToSave.setRole(professor.getRole());
+    Professor professorToSave = Professor.builder()
+        .name(professor.getName())
+        .email(professor.getEmail())
+        .lastName(professor.getLastName())
+        .documentNumber(professor.getDocumentNumber())
+        .phoneNumber(professor.getPhoneNumber())
+        .role(professor.getRole()).build();
 
     return professorToSave;
 
@@ -47,7 +47,7 @@ public class ProfessorTransactions {
       professorSaved.setPhoneNumber(professorNew.getPhoneNumber());
     }
 
-    return  professorSaved;
+    return professorSaved;
   }
 
   public Optional<Professor> getProfessorById(UUID uuid) {

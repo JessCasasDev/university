@@ -84,8 +84,9 @@ public class AssignatureService {
     assignatureValidations.validatePrerequisite(assignature, prerequisitesUUID);
 
     assignatures.forEach(assignature1 -> {
-      Prerequisite prerequisite = new Prerequisite();
-      prerequisite.setPrerequisite(assignature1);
+      Prerequisite prerequisite = Prerequisite
+          .builder()
+          .prerequisite(assignature1).build();
       assignature.addPrerequisite(prerequisite);
     });
 

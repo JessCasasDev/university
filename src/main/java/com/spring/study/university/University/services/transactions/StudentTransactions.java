@@ -18,16 +18,17 @@ public class StudentTransactions {
 
 
   public Student createStudent(Student student) {
-    Student studentToSave = new Student();
-    studentToSave.setPhoneNumber(student.getPhoneNumber());
-    studentToSave.setName(student.getName());
-    studentToSave.setLastName(student.getLastName());
-    studentToSave.setEmail(student.getEmail());
-    studentToSave.setRole(student.getRole());
-    studentToSave.setDocumentNumber(student.getDocumentNumber());
-    studentToSave.setStudentNumber(student.getStudentNumber());
+    Student studentToSave = Student.builder()
+        .name(student.getName())
+        .lastName(student.getLastName())
+        .documentNumber(student.getDocumentNumber())
+        .email(student.getEmail())
+        .phoneNumber(student.getPhoneNumber())
+        .role(student.getRole())
+        .studentNumber(student.getStudentNumber())
+        .build();
 
-    return student;
+    return studentToSave;
   }
 
   public Student saveStudent(Student student) {

@@ -15,7 +15,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalTime;
@@ -25,6 +28,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "schedules")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Schedule implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)

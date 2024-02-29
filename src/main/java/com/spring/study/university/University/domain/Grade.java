@@ -11,14 +11,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
 import java.util.UUID;
 
+@Builder
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="grades")
 public class Grade implements Serializable {
   @Id
@@ -43,9 +49,5 @@ public class Grade implements Serializable {
   public Grade(GradeDTO grade) {
     this.uuid = grade.getUUID();
     this.grade = grade.getGrade();
-  }
-
-  public Grade() {
-
   }
 }

@@ -78,14 +78,19 @@ class AdminTransactionsTest {
   @Test
   void updateAdmin() {
     Admin admin = getAdminInfo();
-    Admin newInfo = new Admin();
-    newInfo.setName("Other name");
-    newInfo.setLastName("Other name");
-    newInfo.setPhoneNumber(456L);
-    newInfo.setEmail("other_email@email.com");
-    newInfo.setUuid(UUID.randomUUID());
-    newInfo.setRole(new Role(RoleEnum.Professor));
-    newInfo.setDocumentNumber(888L);
+    Role role = Role.builder()
+        .role(RoleEnum.Professor)
+        .build();
+
+    Admin newInfo = Admin.builder()
+        .name("Other name")
+        .lastName("Other name")
+        .phoneNumber(456L)
+        .email("other_email@email.com")
+        .uuid(UUID.randomUUID())
+        .role(role)
+        .documentNumber(888L)
+        .build();
 
     Admin savedAdmin = adminTransactions.updateAdmin(admin, newInfo);
 
@@ -139,12 +144,18 @@ class AdminTransactionsTest {
   }
 
   private Admin getAdminInfo() {
-    Admin admin = new Admin();
-    admin.setName("Admin");
-    admin.setLastName("Lastname");
-    admin.setPhoneNumber(1234567L);
-    admin.setEmail("admin@email.com");
-    admin.setRole(new Role(RoleEnum.Admin));
+    Role role = Role.builder()
+        .role(RoleEnum.Admin)
+        .build();
+
+    Admin admin = Admin.builder()
+        .name("Admin")
+        .lastName("Lastname")
+        .phoneNumber(1234567L)
+        .email("admin@email.com")
+        .role(role)
+        .build();
+
 
     return admin;
   }

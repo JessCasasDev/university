@@ -12,7 +12,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
@@ -22,7 +25,10 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Builder
 @Table(name = "class_list")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClassList implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
