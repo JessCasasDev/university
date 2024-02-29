@@ -40,7 +40,7 @@ public class ClassList implements Serializable {
   private Integer maxNumberOfStudents;
   @ManyToMany
   @JsonIgnore
-  private Set<Student> students = new HashSet<>();
+  private final Set<Student> students = new HashSet<>();
 
   @ManyToOne
   @JoinColumn(name = "assignature")
@@ -51,6 +51,6 @@ public class ClassList implements Serializable {
   @JoinTable(
       name = "schedule_class_list",
       joinColumns = @JoinColumn(name = "class_list"), inverseJoinColumns = @JoinColumn(name = "schedule"))
-  private Set<Schedule> schedules = new HashSet();
+  private final Set<Schedule> schedules = new HashSet();
 
 }

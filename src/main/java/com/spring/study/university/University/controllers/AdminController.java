@@ -2,6 +2,11 @@ package com.spring.study.university.University.controllers;
 
 import com.spring.study.university.University.domain.Admin;
 import com.spring.study.university.University.services.AdminService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +37,15 @@ public class AdminController {
     return adminService.addAdmin(admin);
   }
 
+  @Operation(summary = "Get an admin by its id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Found admin",
+          content = { @Content(mediaType = "application/json",
+              schema = @Schema(implementation = Admin.class)) }),
+      @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+          content = @Content),
+      @ApiResponse(responseCode = "404", description = "Admin not found",
+          content = @Content) })
   @GetMapping("/{uuid}")
   public Admin getAdmin(@PathVariable UUID uuid){
     return adminService.getAdmin(uuid);

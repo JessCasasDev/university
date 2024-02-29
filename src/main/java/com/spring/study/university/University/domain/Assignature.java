@@ -50,14 +50,14 @@ public class Assignature implements Serializable {
 
   @ManyToMany(mappedBy = "assignature")
   @JsonIgnore
-  private List<ClassList> classLists = new ArrayList<>();
+  private final List<ClassList> classLists = new ArrayList<>();
 
   @ManyToOne
   @JoinColumn(name = "professor_id")
   private Professor professor;
 
   @OneToMany(mappedBy = "assignature", cascade = CascadeType.ALL)
-  private Set<Prerequisite> prerequisites = new HashSet<>();
+  private final Set<Prerequisite> prerequisites = new HashSet<>();
 
   public void addPrerequisite(Prerequisite prerequisite) {
     this.prerequisites.add(prerequisite);
